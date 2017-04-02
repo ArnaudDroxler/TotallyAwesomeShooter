@@ -9,15 +9,16 @@ namespace TAS
     {
         public float fireRate = 1;
         private float nextFire = 0;
+        
+        public Rocket rocket;
+        public float moveSpeed;
 
-        public Rigidbody rocket;
-        public float power;
         private GameObject rocketSpawnPoint;
 
         // Use this for initialization
         void Start()
         {
-            SetInitialReferneces();
+            rocketSpawnPoint = GameObject.Find("RocketSpawnPoint");
         }
 
         // Update is called once per frame
@@ -25,20 +26,16 @@ namespace TAS
         {
             CheckForInput();
         }
-
-        void SetInitialReferneces()
-        {
-            rocketSpawnPoint = GameObject.Find("RocketSpawnPoint");
-        }
+        
 
         void CheckForInput()
         {
             // Button name in inputManager
             if (Input.GetButton("Fire1") && Time.time >= nextFire)
             {
-                Rigidbody clone;
+                Rocket clone;
                 clone = Instantiate(rocket, rocketSpawnPoint.transform.position, rocketSpawnPoint.transform.rotation);
-                clone.velocity = transform.TransformDirection(Vector3.forward * power);
+                clone.setSpeed(moveSpeed);
 
                 nextFire = Time.time + fireRate;
             }

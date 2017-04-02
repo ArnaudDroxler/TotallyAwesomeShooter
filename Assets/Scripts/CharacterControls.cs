@@ -362,20 +362,13 @@ namespace TAS
         // -----------------
         //  Rocket jumps
         // -----------------
-        public void RocketForce(float power, Vector3 origin, float radius, float explosiveLift)
+        public void RocketForce(float power, Vector3 origin, float radius)
         {
-            // TODO: make that better
-
-            Debug.Log("power = " + power);
-            Debug.Log("origin = " + origin);
-            Debug.Log("radius = " + radius);
-            Debug.Log("lift = " + explosiveLift);
-            Debug.Log("-------------");
-
             Vector3 tossDirection;
             tossDirection = transform.position - origin;
-            Vector3 tossVector = tossDirection * power / tossDirection.magnitude;
-            m_controller.Move(tossVector);
+            float force = tossDirection.magnitude * (radius /power);
+            Vector3 tossVector = tossDirection / force;
+            playerVelocity += tossVector;
         }
     }
 }   

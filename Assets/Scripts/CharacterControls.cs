@@ -177,6 +177,7 @@ namespace TAS
 
         private void GroundMove(Vector2 input)
         {
+            // Debug coloring in gray when on the ground
             MeshRenderer mr = GetComponent<MeshRenderer>();
             mr.material.color = Color.gray;
 
@@ -198,7 +199,7 @@ namespace TAS
             Accelerate(wishDir, wishSpeed, movementSettings.runAcceleration);
 
 
-            playerVelocity.y = -1 * movementSettings.gravity * Time.deltaTime;
+            //playerVelocity.y = - m_controller.stepOffset * Time.deltaTime;
 
             if (wishJump)
             {
@@ -209,6 +210,7 @@ namespace TAS
 
         private void AirMove(Vector2 input)
         {
+            // Debug coloring in red when on the ground
             MeshRenderer mr = GetComponent<MeshRenderer>();
             mr.material.color = Color.red;
 
@@ -273,7 +275,7 @@ namespace TAS
             k *= movementSettings.airControl * dot * dot * Time.deltaTime;
 
             // Change direction while slowing down
-            //if (dot > 0)
+            if (dot > 0)
             {
                 playerVelocity.x = playerVelocity.x * speed + wishDir.x * k;
                 playerVelocity.y = playerVelocity.y * speed + wishDir.y * k;

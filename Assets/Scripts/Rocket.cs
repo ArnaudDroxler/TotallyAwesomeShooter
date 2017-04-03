@@ -27,9 +27,6 @@ namespace TAS
             if (Physics.Linecast(transform.position, nextPosition, out hit))
             {
                 // Colision happened at hit.point
-
-
-                Debug.Log(hit.collider.name);
                 Vector3 origin = hit.point;
                 Collider[] colliders = Physics.OverlapSphere(origin, radius);
 

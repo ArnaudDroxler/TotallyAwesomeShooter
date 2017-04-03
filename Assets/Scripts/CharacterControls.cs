@@ -198,7 +198,7 @@ namespace TAS
             
             Accelerate(wishDir, wishSpeed, movementSettings.runAcceleration);
 
-
+            // caused isGrounded flickering
             //playerVelocity.y = - m_controller.stepOffset * Time.deltaTime;
 
             if (wishJump)
@@ -376,11 +376,13 @@ namespace TAS
         {
             Vector3 tossDirection;
             tossDirection = transform.position - origin;
-            float force = tossDirection.magnitude * (radius /power);
-            Vector3 tossVector = tossDirection / force;
-            playerVelocity += tossVector;
 
-            Debug.Log(tossVector);
+            // -0.5 for the capsule radius
+            float distance = tossDirection.magnitude - 0.5f; 
+            float force = power / radius * (radius - distance);
+            
+            tossDirection.Normalize();
+            playerVelocity += tossDirection * force;
         }
     }
 }   

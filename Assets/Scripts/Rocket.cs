@@ -28,11 +28,6 @@ namespace TAS
             {
                 // Colision happened at hit.point
 
-                if (hit.collider.tag == "Player")
-                { 
-                    transform.position = nextPosition;
-                    return;
-                }
 
                 Debug.Log(hit.collider.name);
                 Vector3 origin = hit.point;

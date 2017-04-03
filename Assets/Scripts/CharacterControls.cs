@@ -177,6 +177,9 @@ namespace TAS
 
         private void GroundMove(Vector2 input)
         {
+            MeshRenderer mr = GetComponent<MeshRenderer>();
+            mr.material.color = Color.gray;
+
             Vector3 wishDir;
             float wishSpeed;
 
@@ -194,7 +197,8 @@ namespace TAS
             
             Accelerate(wishDir, wishSpeed, movementSettings.runAcceleration);
 
-            playerVelocity.y = 0;
+
+            playerVelocity.y = -1 * movementSettings.gravity * Time.deltaTime;
 
             if (wishJump)
             {
@@ -205,6 +209,10 @@ namespace TAS
 
         private void AirMove(Vector2 input)
         {
+            MeshRenderer mr = GetComponent<MeshRenderer>();
+            mr.material.color = Color.red;
+
+
             Vector3 wishDir;
             float accel;
             float wishSpeed;
@@ -265,7 +273,7 @@ namespace TAS
             k *= movementSettings.airControl * dot * dot * Time.deltaTime;
 
             // Change direction while slowing down
-            if (dot > 0)
+            //if (dot > 0)
             {
                 playerVelocity.x = playerVelocity.x * speed + wishDir.x * k;
                 playerVelocity.y = playerVelocity.y * speed + wishDir.y * k;
@@ -369,6 +377,8 @@ namespace TAS
             float force = tossDirection.magnitude * (radius /power);
             Vector3 tossVector = tossDirection / force;
             playerVelocity += tossVector;
+
+            Debug.Log(tossVector);
         }
     }
 }   

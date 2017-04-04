@@ -69,6 +69,8 @@ namespace TAS
         /*print() style */
         public GUIStyle style;
 
+        private float fallZone = -50.0f;
+
         // -----------------
         //  Methods
         // -----------------
@@ -130,9 +132,9 @@ namespace TAS
             // Move the character
             m_controller.Move(playerVelocity * Time.deltaTime);
 
-            if (Input.GetKeyUp("x"))
-                PlayerExplode();
-            if (Input.GetButton("Fire1") && isDead)
+            if(m_controller.transform.position.y < fallZone)
+                PlayerSpawn();
+            if (Input.GetKeyUp("r"))
                 PlayerSpawn();
         }
 
@@ -353,10 +355,6 @@ namespace TAS
         // -----------------
         //  Player actions
         // -----------------
-        private void PlayerExplode()
-        {
-            isDead = true;
-        }
 
         private void PlayerSpawn()
         {

@@ -12,13 +12,12 @@ namespace TAS
         
         public Rocket rocket;
         public float moveSpeed;
-
-        private GameObject rocketSpawnPoint;
+        
+        public Transform t;
 
         // Use this for initialization
         void Start()
         {
-            rocketSpawnPoint = GameObject.Find("RocketSpawnPoint");
         }
 
         // Update is called once per frame
@@ -34,7 +33,7 @@ namespace TAS
             if (Input.GetButton("Fire1") && Time.time >= nextFire)
             {
                 Rocket clone;
-                clone = Instantiate(rocket, rocketSpawnPoint.transform.position, rocketSpawnPoint.transform.rotation);
+                clone = Instantiate(rocket, t.position, t.rotation);
                 clone.setSpeed(moveSpeed);
 
                 nextFire = Time.time + fireRate;

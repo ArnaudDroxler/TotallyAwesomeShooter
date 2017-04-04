@@ -1274,6 +1274,7 @@ MonoBehaviour:
     playerViewYOffset: 0.6
     xMouseSensitivity: 50
     yMouseSensitivity: 50
+  gun: {fileID: 792083284}
   style:
     m_Name: 
     m_Normal:
@@ -1512,6 +1513,7 @@ MonoBehaviour:
   fireRate: 1
   rocket: {fileID: 114521099419732792, guid: acbaf0f3eb6bb6343b832430ad6b1fbb, type: 2}
   moveSpeed: 30
+  t: {fileID: 446702914}
 --- !u!1 &896292352
 GameObject:
   m_ObjectHideFlags: 0

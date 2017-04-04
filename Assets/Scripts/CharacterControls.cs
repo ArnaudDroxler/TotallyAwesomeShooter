@@ -167,9 +167,11 @@ namespace TAS
         {
             Ray ray = m_camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;
-            bool isHit = Physics.Raycast(ray, out hit);
-            if(isHit)
+            float distance = 100.0f;
+            if (Physics.Raycast(ray, out hit, distance))
                 gun.transform.LookAt(hit.point);
+            else
+                gun.transform.LookAt(ray.origin + ray.direction * distance);
         }
 
         private Vector2 GetInput()

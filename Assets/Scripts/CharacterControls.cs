@@ -65,9 +65,14 @@ namespace TAS
         private bool wishJump = false;
 
         // Player status
-        private Vector3 spawnPosition;
-        private Quaternion spawnRotation;
-        private bool isDead;
+        public Vector3 spawnPosition;
+        public Quaternion spawnRotation;
+
+        public Vector3 reSpawnPosition;
+        public Quaternion reSpawnRotation;
+
+        private float timer = 0.0f;
+        public bool timerOk = false;
 
         /*print() style */
         public GUIStyle style;
@@ -97,9 +102,7 @@ namespace TAS
             spawnPosition = transform.position;
             spawnRotation = m_camera.transform.rotation;
 
-            // make player alive
-            isDead = false;
-            
+           
         }
 
         private void Update()
@@ -137,9 +140,12 @@ namespace TAS
             m_controller.Move(playerVelocity * Time.deltaTime);
 
             if(m_controller.transform.position.y < fallZone)
-                PlayerSpawn();
+                PlayerReSpawn();
             if (Input.GetKeyUp("r"))
-                PlayerSpawn();
+                PlayerReSpawn();
+
+            if (timerOk)
+                timer += Time.deltaTime;
         }
 
 
@@ -363,7 +369,8 @@ namespace TAS
         {
             Vector3 ups = m_controller.velocity;
             ups.y = 0;
-            GUI.Label(new Rect(0, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
+            GUI.Label(new Rect(15, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
+            GUI.Label(new Rect(15, 30, 400, 100), "Time: " + timer + "ms", style);
         }
        
 
@@ -372,14 +379,25 @@ namespace TAS
         //  Player actions
         // -----------------
 
+        private void PlayerReSpawn()
+        {
+            transform.position = reSpawnPosition;
+            m_camera.transform.rotation = reSpawnRotation;
+            rotX = 0.0f;
+            rotY = 0.0f;
+            playerVelocity = Vector3.zero;
+            
+        }
+
         private void PlayerSpawn()
         {
             transform.position = spawnPosition;
             m_camera.transform.rotation = spawnRotation;
             rotX = 0.0f;
             rotY = 0.0f;
+            timer = 0.0f;
             playerVelocity = Vector3.zero;
-            isDead = false;
+
         }
 
 

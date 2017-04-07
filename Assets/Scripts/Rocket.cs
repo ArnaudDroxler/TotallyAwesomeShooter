@@ -8,6 +8,8 @@ namespace TAS
     {
         public float radius = 500f;
         public float power = 10f;
+        public GameObject explosion;
+
 
         private float speed = 5.0f;
 
@@ -30,6 +32,10 @@ namespace TAS
                 Vector3 origin = hit.point;
                 Collider[] colliders = Physics.OverlapSphere(origin, radius);
 
+                GameObject exp = Instantiate(explosion, transform.position, transform.rotation);
+                Destroy(exp, exp.GetComponent<ParticleSystem>().main.duration);
+                Destroy(this.gameObject);
+
                 foreach (Collider collider in colliders)
                 {
                     if (collider.GetComponent<CharacterControls>())
@@ -38,8 +44,8 @@ namespace TAS
                     }
 
 
-                    Destroy(this.gameObject);
                 }
+
             }
             else
             {

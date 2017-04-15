@@ -37,6 +37,7 @@ namespace TAS
             public float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when
             public float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
             public float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
+            public float WallJumpSpeed = 10.0f;
             public float moveScale = 1.0f;
             public float gravity = 20.0f;
             public float friction = 6.0f;
@@ -377,6 +378,18 @@ namespace TAS
             playerVelocity.x *= newspeed;
             // playerVelocity.y *= newspeed;
             playerVelocity.z *= newspeed;
+        }
+
+        private void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            if (!m_controller.isGrounded && hit.normal.y < 0.1f)
+            {
+                if (wishJump)
+                {
+                    playerVelocity += hit.normal * movementSettings.jumpSpeed;
+                    playerVelocity.y = movementSettings.WallJumpSpeed;
+                }
+            }
         }
 
         // -----------------

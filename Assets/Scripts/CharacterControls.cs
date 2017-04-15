@@ -270,8 +270,39 @@ namespace TAS
             float k;
 
             // Can't control movement if not moving forward or backward
-            if (Mathf.Abs(input.x) < 0.001 || Mathf.Abs(wishSpeed) < 0.001)
+            if (Mathf.Abs(input.y) < 0.001 || Mathf.Abs(wishSpeed) < 0.001)
                 return;
+
+            // Perfect air control if moving only forward or backward
+            if (Mathf.Abs(input.y) > 0.001 && Mathf.Abs(input.x) < 0.001)
+            {
+                zspeed = playerVelocity.y;
+                playerVelocity.y = 0;
+
+                /* Next two lines are equivalent to idTech's VectorNormalize() */
+                speed = playerVelocity.magnitude;
+                playerVelocity.Normalize();
+
+                dot = Vector3.Dot(playerVelocity, wishDir);
+                k = 32;
+                k *= movementSettings.airControl * dot * dot * Time.deltaTime;
+                
+                // Change direction while slowing down
+                if (dot > 0)
+                {
+                    playerVelocity.x = wishDir.x * speed * k;
+                    playerVelocity.y = wishDir.y * speed * k;
+                    playerVelocity.z = wishDir.z * speed * k;
+
+                    playerVelocity.Normalize();
+                }
+
+                playerVelocity.x *= speed;
+                playerVelocity.y = zspeed; // Note this line
+                playerVelocity.z *= speed;
+
+                return;
+            }
 
             zspeed = playerVelocity.y;
             playerVelocity.y = 0;

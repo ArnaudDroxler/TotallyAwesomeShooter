@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -969,34 +969,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: de9a7dfe245210f439a32ee6e0fc70e9, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &446702913
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 446702914}
-  m_Layer: 2
-  m_Name: RocketSpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &446702914
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 446702913}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.23333333, y: 1.4666747, z: 6.4}
-  m_LocalScale: {x: 33.333336, y: 33.333336, z: 33.333336}
-  m_Children: []
-  m_Father: {fileID: 792083284}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &499268521
 Mesh:
   m_ObjectHideFlags: 0
@@ -1522,6 +1494,7 @@ GameObject:
   - component: {fileID: 670936732}
   - component: {fileID: 670936731}
   - component: {fileID: 670936730}
+  - component: {fileID: 670936735}
   m_Layer: 2
   m_Name: Player
   m_TagString: Player
@@ -1577,7 +1550,6 @@ MonoBehaviour:
     playerViewYOffset: 0.6
     xMouseSensitivity: 50
     yMouseSensitivity: 50
-  gun: {fileID: 792083284}
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
   reSpawnPosition: {x: 0, y: 0, z: 0}
@@ -1705,6 +1677,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &670936735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 670936729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ffff46d423ffa418d4eb1eb7dd2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireRate: 1
+  rocket: {fileID: 114103427821195018, guid: 8a43553d2d25a9e4c8af552ca3af384a, type: 2}
+  moveSpeed: 20
+  m_camera: {fileID: 753509976}
 --- !u!1 &753509975
 GameObject:
   m_ObjectHideFlags: 0
@@ -1799,29 +1786,10 @@ Transform:
   m_Father: {fileID: 670936734}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &792083283 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 100000, guid: 1e3539eb2d8892c4683c73017d8dbb94, type: 3}
-  m_PrefabInternal: {fileID: 1929127445}
 --- !u!4 &792083284 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: 1e3539eb2d8892c4683c73017d8dbb94, type: 3}
   m_PrefabInternal: {fileID: 1929127445}
---- !u!114 &792083286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 792083283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0ffff46d423ffa418d4eb1eb7dd2b15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fireRate: 1
-  rocket: {fileID: 114022012661738310, guid: 8a43553d2d25a9e4c8af552ca3af384a, type: 2}
-  moveSpeed: 30
-  t: {fileID: 446702914}
 --- !u!1 &896292352
 GameObject:
   m_ObjectHideFlags: 0
@@ -3025,7 +2993,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 1e3539eb2d8892c4683c73017d8dbb94, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.283
+      value: -0.128
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 1e3539eb2d8892c4683c73017d8dbb94, type: 3}
       propertyPath: m_LocalRotation.x

@@ -50,9 +50,7 @@ namespace TAS
 
         public MovementSettings movementSettings = new MovementSettings();
         public ViewSettings viewSettings = new ViewSettings();
-
-        public Transform gun;
-
+        
         private CharacterController m_controller;
 
         // Camera rotations
@@ -118,7 +116,6 @@ namespace TAS
             }
 
             RotateView();
-            MoveGun();
 
             //Jump detection here to not miss it
             QueueJump();
@@ -168,18 +165,7 @@ namespace TAS
             transform.rotation = Quaternion.Euler(0, rotY, 0); // Rotates the collider
             m_camera.transform.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
         }
-
-        private void MoveGun()
-        {
-            Ray ray = m_camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-            RaycastHit hit;
-            float distance = 100.0f;
-            if (Physics.Raycast(ray, out hit, distance))
-                gun.transform.LookAt(hit.point);
-            else
-                gun.transform.LookAt(ray.origin + ray.direction * distance);
-        }
-
+        
         private Vector2 GetInput()
         {
             Vector2 input = new Vector2

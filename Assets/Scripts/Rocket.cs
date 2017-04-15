@@ -9,7 +9,7 @@ namespace TAS
         public float radius = 500f;
         public float power = 10f;
         public GameObject explosion;
-
+        public LayerMask m_layerMask;
 
         private float speed = 5.0f;
 
@@ -26,7 +26,7 @@ namespace TAS
             Vector3 nextPosition = transform.position + transform.forward * Time.deltaTime * speed;
 
             RaycastHit hit;
-            if (Physics.Linecast(transform.position, nextPosition, out hit))
+            if (Physics.Linecast(transform.position, nextPosition, out hit, m_layerMask))
             {
                 // Colision happened at hit.point
                 Vector3 origin = hit.point;
@@ -42,8 +42,6 @@ namespace TAS
                     {
                         collider.GetComponent<CharacterControls>().RocketForce(power, origin, radius);
                     }
-
-
                 }
 
             }

@@ -13,7 +13,7 @@ namespace TAS
         public Rocket rocket;
         public float moveSpeed;
         
-        public Transform t;
+        public Camera m_camera;
 
         // Use this for initialization
         void Start()
@@ -33,7 +33,7 @@ namespace TAS
             if (Input.GetButton("Fire1") && Time.time >= nextFire)
             {
                 Rocket clone;
-                clone = Instantiate(rocket, t.position, t.rotation);
+                clone = Instantiate(rocket, m_camera.transform.position + m_camera.transform.forward * 0.5f, m_camera.transform.rotation);
                 clone.setSpeed(moveSpeed);
 
                 nextFire = Time.time + fireRate;

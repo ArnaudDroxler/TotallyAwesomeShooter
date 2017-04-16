@@ -28,6 +28,11 @@ namespace TAS
             RaycastHit hit;
             if (Physics.Linecast(transform.position, nextPosition, out hit, m_layerMask))
             {
+                if (hit.collider.GetComponent<Door>())
+                {
+                    hit.collider.GetComponent<Door>().Open();
+                }
+
                 // Colision happened at hit.point
                 Vector3 origin = hit.point;
                 Collider[] colliders = Physics.OverlapSphere(origin, radius);

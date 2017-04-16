@@ -283,20 +283,12 @@ namespace TAS
                 /* Next two lines are equivalent to idTech's VectorNormalize() */
                 speed = playerVelocity.magnitude;
                 playerVelocity.Normalize();
-
-                dot = Vector3.Dot(playerVelocity, wishDir);
-                k = 32;
-                k *= movementSettings.airControl * dot * dot * Time.deltaTime;
                 
-                // Change direction while slowing down
-                if (dot > 0)
-                {
-                    playerVelocity.x = wishDir.x * speed * k;
-                    playerVelocity.y = wishDir.y * speed * k;
-                    playerVelocity.z = wishDir.z * speed * k;
+                playerVelocity.x = playerVelocity.x + wishDir.x * movementSettings.airControl;
+                playerVelocity.y = playerVelocity.y + wishDir.y * movementSettings.airControl;
+                playerVelocity.z = playerVelocity.z + wishDir.z * movementSettings.airControl;
 
-                    playerVelocity.Normalize();
-                }
+                playerVelocity.Normalize();
 
                 playerVelocity.x *= speed;
                 playerVelocity.y = zspeed; // Note this line

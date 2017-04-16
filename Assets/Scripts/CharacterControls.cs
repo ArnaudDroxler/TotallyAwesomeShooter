@@ -58,7 +58,7 @@ namespace TAS
         private float rotX = 0.0f;
         private float rotY = 0.0f;
         
-        private Vector3 playerVelocity = Vector3.zero;
+        public Vector3 playerVelocity = Vector3.zero;
 
         // Q3: players can queue the next jump just before he hits the ground
         private bool wishJump = false;
@@ -178,7 +178,7 @@ namespace TAS
         }
 
         // Movement methods
-        private void QueueJump()
+        public void QueueJump()
         {
             if (Input.GetButtonDown("Jump"))
                 wishJump = true;
@@ -381,7 +381,7 @@ namespace TAS
         }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
-        {
+        { 
             if (!m_controller.isGrounded && hit.normal.y < 0.1f)
             {
                 if (wishJump)
@@ -389,7 +389,12 @@ namespace TAS
                     playerVelocity += hit.normal * movementSettings.jumpSpeed;
                     playerVelocity.y = movementSettings.WallJumpSpeed;
                 }
-            }
+            }   
+        }
+
+        public void jumpPad(float jumpForce, Vector3 normal)
+        {
+            playerVelocity = normal * jumpForce;
         }
 
         // -----------------

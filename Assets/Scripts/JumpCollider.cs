@@ -13,7 +13,6 @@ namespace TAS
 
         private void OnTriggerEnter(Collider playerCollider)
         {
-            Debug.Log(transform.up);
             player.GetComponent<CharacterControls>().jumpPad(JumpPadForce, transform.up);
         }
 

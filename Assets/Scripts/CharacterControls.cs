@@ -70,7 +70,7 @@ namespace TAS
         public Vector3 reSpawnPosition;
         public Quaternion reSpawnRotation;
 
-        private float timer = 0.0f;
+        public float timer = 0.0f;
         public bool timerOk = false;
 
         /*print() style */
@@ -143,7 +143,7 @@ namespace TAS
                 PlayerReSpawn();
 
             if (timerOk)
-                timer += Time.deltaTime;
+                timer += Time.deltaTime * 1000;
         }
 
 

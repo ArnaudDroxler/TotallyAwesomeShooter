@@ -52,7 +52,7 @@ namespace TAS
         public MovementSettings movementSettings = new MovementSettings();
         public ViewSettings viewSettings = new ViewSettings();
         
-        private CharacterController m_controller;
+        public CharacterController m_controller;
 
         // Camera rotations
         private float rotX = 0.0f;
@@ -392,13 +392,13 @@ namespace TAS
         // -----------------
         //  SpeedOmeter
         // -----------------
-        private void OnGUI()
+        /*private void OnGUI()
         {
             Vector3 ups = m_controller.velocity;
             ups.y = 0;
             GUI.Label(new Rect(15, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
             GUI.Label(new Rect(15, 30, 400, 100), "Time: " + timer + "ms", style);
-        }
+        }*/
        
 
 

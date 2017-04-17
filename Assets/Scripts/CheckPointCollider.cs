@@ -8,9 +8,12 @@ namespace TAS
     {
         public GameObject player;
 
-        private void OnTriggerEnter()
+        private void OnTriggerEnter(Collider playerCollider)
         {
-            player.GetComponent<CharacterControls>().reSpawnPosition = GetComponent<Transform>().position;
+            if (playerCollider.GetComponent<CharacterControls>())
+            {
+                player.GetComponent<CharacterControls>().reSpawnPosition = GetComponent<Transform>().position;
+            }
         
         }
     }

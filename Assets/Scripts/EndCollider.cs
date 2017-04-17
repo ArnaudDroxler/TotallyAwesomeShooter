@@ -9,9 +9,12 @@ namespace TAS
 
         public GameObject player;
 
-        private void OnTriggerEnter()
+        private void OnTriggerEnter(Collider playerCollider)
         {
-            player.GetComponent<CharacterControls>().timerOk = false;
+            if (playerCollider.GetComponent<CharacterControls>())
+            {
+                player.GetComponent<CharacterControls>().timerOk = false;
+            }
         }
 
     }

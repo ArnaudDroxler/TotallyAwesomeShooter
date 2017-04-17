@@ -12,7 +12,6 @@ namespace TAS
 
         private void OnTriggerEnter(Collider playerCollider)
         {
-            Debug.Log(transform.up);
             if (playerCollider.GetComponent<CharacterControls>())
             {
                 playerCollider.GetComponent<CharacterControls>().jumpPad(JumpPadForce, transform.up);

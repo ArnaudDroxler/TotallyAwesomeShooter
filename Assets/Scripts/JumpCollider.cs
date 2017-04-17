@@ -7,14 +7,16 @@ namespace TAS
 {
     public class JumpCollider : MonoBehaviour
     {
-
-        public GameObject player;
+        
         public float JumpPadForce =  10.0f;
 
         private void OnTriggerEnter(Collider playerCollider)
         {
             Debug.Log(transform.up);
-            player.GetComponent<CharacterControls>().jumpPad(JumpPadForce, transform.up);
+            if (playerCollider.GetComponent<CharacterControls>())
+            {
+                playerCollider.GetComponent<CharacterControls>().jumpPad(JumpPadForce, transform.up);
+            }
         }
 
     }

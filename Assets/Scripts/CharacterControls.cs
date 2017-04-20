@@ -68,7 +68,7 @@ namespace TAS
         public Quaternion spawnRotation;
 
         public Vector3 reSpawnPosition;
-        public Quaternion reSpawnRotation;
+        public float reSpawnRotY;
 
         public float timer = 0.0f;
         public bool timerOk = false;
@@ -409,9 +409,8 @@ namespace TAS
         private void PlayerReSpawn()
         {
             transform.position = reSpawnPosition;
-            m_camera.transform.rotation = reSpawnRotation;
             rotX = 0.0f;
-            rotY = 0.0f;
+            rotY = reSpawnRotY;
             playerVelocity = Vector3.zero;
             
         }
@@ -442,6 +441,14 @@ namespace TAS
             
             tossDirection.Normalize();
             playerVelocity += tossDirection * force;
+        }
+
+        public void activeGun()
+        {
+            GetComponent<Shoot>().enabled = true;
+            transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+
+
         }
     }
 }   

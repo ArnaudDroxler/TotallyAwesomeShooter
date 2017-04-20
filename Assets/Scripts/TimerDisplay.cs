@@ -24,7 +24,6 @@ namespace TAS
             double timer = player.GetComponent<CharacterControls>().timer;
 
             var ts = TimeSpan.FromMilliseconds(timer);
-            Debug.Log(ts.Milliseconds);
             var parts = string.Format("{0:D2}:{1:D2}:{2:D3}",  ts.Minutes, ts.Seconds, ts.Milliseconds).Split(':').SkipWhile(s => Regex.Match(s, @"00\w").Success).ToArray();
             var result = string.Join(":", parts);
 

@@ -47,6 +47,11 @@ namespace TAS
                     {
                         collider.GetComponent<CharacterControls>().RocketForce(power, origin, radius);
                     }
+
+                    if (collider.GetComponent<Rigidbody>())
+                    {
+                        collider.GetComponent<Rigidbody>().AddExplosionForce(power, origin, radius);
+                    }
                 }
 
             }

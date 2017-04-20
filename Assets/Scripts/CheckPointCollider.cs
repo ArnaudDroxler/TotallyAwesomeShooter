@@ -13,8 +13,11 @@ namespace TAS
             if (playerCollider.GetComponent<CharacterControls>())
             {
                 player.GetComponent<CharacterControls>().reSpawnPosition = GetComponent<Transform>().position;
+                player.GetComponent<CharacterControls>().reSpawnRotY = GetComponent<Transform>().localEulerAngles.y;
+
+
             }
-        
+
         }
     }
 

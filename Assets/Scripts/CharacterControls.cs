@@ -34,8 +34,8 @@ namespace TAS
             public float airAcceleration = 2.0f;          // Air accel
             public float airDecceleration = 2.0f;         // Deacceleration experienced when ooposite strafing
             public float airControl = 0.3f;               // How precise air control is
-            public float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when
-            public float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
+            //public float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when
+            //public float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
             public float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
             public float WallJumpSpeed = 10.0f;
             public float moveScale = 1.0f;
@@ -208,9 +208,9 @@ namespace TAS
             wishSpeed *= movementSettings.moveSpeed;
             
             Accelerate(wishDir, wishSpeed, movementSettings.runAcceleration);
-
-            // caused isGrounded flickering
-            //playerVelocity.y = - m_controller.stepOffset * Time.deltaTime;
+            
+            // reset gravity ( <1 = isGrounded flickering)
+            playerVelocity.y = - 1;
 
             if (wishJump)
             {
@@ -248,19 +248,15 @@ namespace TAS
             else
                 accel = movementSettings.airAcceleration;
 
-            // If the player is ONLY strafing left or right
-            if (input.x == 0 && input.y != 0)
-            {
-                if (wishSpeed > movementSettings.sideStrafeSpeed)
-                    wishSpeed = movementSettings.sideStrafeSpeed;
-                accel = movementSettings.sideStrafeAcceleration;
-            }
-
             Accelerate(wishDir, wishSpeed, accel);
 
-            AirControl(input, wishDir, wishSpeed2);
+            // No air control if angle too big
+            float yVel = playerVelocity.y;
+            playerVelocity.y = 0;
+            if (Vector3.Angle(wishDir, playerVelocity) < 45)
+                AirControl(input, wishDir, wishSpeed2);
 
-            playerVelocity.y -= movementSettings.gravity * Time.deltaTime;
+            playerVelocity.y = yVel - movementSettings.gravity * Time.deltaTime;
         }
 
         private void AirControl(Vector2 input, Vector3 wishDir, float wishSpeed)
@@ -270,12 +266,10 @@ namespace TAS
             float dot;
             float k;
 
-            // Can't control movement if not moving forward or backward
-            if (Mathf.Abs(input.y) < 0.001 || Mathf.Abs(wishSpeed) < 0.001)
-                return;
 
-            // Perfect air control if moving only forward or backward
-            if (Mathf.Abs(input.y) > 0.001 && Mathf.Abs(input.x) < 0.001)
+            
+            // Good air control if moving only forward or backward
+            if (Mathf.Abs(input.y) > 0 && Mathf.Abs(input.x) < 0.001)
             {
                 zspeed = playerVelocity.y;
                 playerVelocity.y = 0;
@@ -296,31 +290,39 @@ namespace TAS
 
                 return;
             }
-
-            zspeed = playerVelocity.y;
-            playerVelocity.y = 0;
-
-            /* Next two lines are equivalent to idTech's VectorNormalize() */
-            speed = playerVelocity.magnitude;
-            playerVelocity.Normalize();
-
-            dot = Vector3.Dot(playerVelocity, wishDir);
-            k = 32;
-            k *= movementSettings.airControl * dot * dot * Time.deltaTime;
-
-            // Change direction while slowing down
-            if (dot > 0)
+            // Mediocre if diagonals
+            else if (Mathf.Abs(input.y) > 0 && Mathf.Abs(input.x) > 0)
             {
-                playerVelocity.x = playerVelocity.x * speed + wishDir.x * k;
-                playerVelocity.y = playerVelocity.y * speed + wishDir.y * k;
-                playerVelocity.z = playerVelocity.z * speed + wishDir.z * k;
+                zspeed = playerVelocity.y;
+                playerVelocity.y = 0;
 
+                /* Next two lines are equivalent to idTech's VectorNormalize() */
+                speed = playerVelocity.magnitude;
                 playerVelocity.Normalize();
+
+                dot = Vector3.Dot(playerVelocity, wishDir);
+                k = 32;
+                k *= movementSettings.airControl * dot * dot * Time.deltaTime;
+
+                // Change direction while slowing down
+                if (dot > 0)
+                {
+                    playerVelocity.x = playerVelocity.x * speed + wishDir.x * k;
+                    playerVelocity.y = playerVelocity.y * speed + wishDir.y * k;
+                    playerVelocity.z = playerVelocity.z * speed + wishDir.z * k;
+
+                    playerVelocity.Normalize();
+                }
+
+                playerVelocity.x *= speed;
+                playerVelocity.y = zspeed; // Note this line
+                playerVelocity.z *= speed;
             }
 
-            playerVelocity.x *= speed;
-            playerVelocity.y = zspeed; // Note this line
-            playerVelocity.z *= speed;
+            else
+            {
+
+            }
         }
 
         private void Accelerate(Vector3 wishDir, float wishSpeed, float accel)
@@ -374,12 +376,19 @@ namespace TAS
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         { 
+            // reset y velocity if hit ceiling
+            if((m_controller.collisionFlags & CollisionFlags.Above) != 0 && playerVelocity.y > 0)
+            {
+                playerVelocity.y = -movementSettings.gravity * Time.deltaTime;
+            }
+
+            // walljumps
             if (!m_controller.isGrounded && hit.normal.y < 0.1f)
             {
                 if (wishJump)
-                {
+                { 
                     playerVelocity += hit.normal * movementSettings.jumpSpeed;
-                    playerVelocity.y = movementSettings.WallJumpSpeed;
+                    playerVelocity.y += movementSettings.WallJumpSpeed;
                 }
             }   
         }

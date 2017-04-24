@@ -32,7 +32,6 @@ namespace TAS
 
         private void FixedUpdate()
         {
-            Debug.Log(magazineState);
             magazineState += reloadRate*100 * Time.fixedDeltaTime;
             if (magazineState > magazineSize * 100)
                 magazineState = magazineSize * 100;

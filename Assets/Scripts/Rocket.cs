@@ -21,7 +21,7 @@ namespace TAS
         }
 
         // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
             Vector3 nextPosition = transform.position + transform.forward * Time.deltaTime * speed;
 
@@ -50,7 +50,9 @@ namespace TAS
 
                     if (collider.GetComponent<Rigidbody>())
                     {
+                        Debug.Log("coucou");
                         collider.GetComponent<Rigidbody>().AddExplosionForce(power, origin, radius);
+                        //collider.gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(5.0f, 5.0f, 5.0f));
                     }
                 }
 

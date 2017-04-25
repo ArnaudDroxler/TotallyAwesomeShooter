@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 5
-  power: 10
+  power: 100
   explosion: {fileID: 1602982708605652, guid: e64bd951b96273b4c970165fe9ba622e, type: 2}
   m_layerMask:
     serializedVersion: 2

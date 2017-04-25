@@ -14,8 +14,6 @@ namespace TAS
         //  Public settings
         // ----------------
 
-        // player view camera
-        public Camera m_camera;
 
         // Settings Classes
         [Serializable]
@@ -36,9 +34,10 @@ namespace TAS
             public float airAcceleration = 2.0f;          // Air accel
             public float airDecceleration = 2.0f;         // Deacceleration experienced when ooposite strafing
             public float airControl = 0.3f;               // How precise air control is
-            public float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when
-            public float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
+            //public float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when
+            //public float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
             public float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
+            public float WallJumpSpeed = 10.0f;
             public float moveScale = 1.0f;
             public float gravity = 20.0f;
             public float friction = 6.0f;
@@ -47,27 +46,37 @@ namespace TAS
         // ----------------
         //  Tools
         // ----------------
+        // player view camera
+        public Camera m_camera;
+
         public MovementSettings movementSettings = new MovementSettings();
         public ViewSettings viewSettings = new ViewSettings();
-
-        private CharacterController m_controller;
+        
+        public CharacterController m_controller;
 
         // Camera rotations
         private float rotX = 0.0f;
         private float rotY = 0.0f;
         
-        private Vector3 playerVelocity = Vector3.zero;
+        public Vector3 playerVelocity = Vector3.zero;
 
         // Q3: players can queue the next jump just before he hits the ground
         private bool wishJump = false;
 
         // Player status
-        private Vector3 spawnPosition;
-        private Quaternion spawnRotation;
-        private bool isDead;
+        public Vector3 spawnPosition;
+        public Quaternion spawnRotation;
+
+        public Vector3 reSpawnPosition;
+        public float reSpawnRotY;
+
+        public float timer = 0.0f;
+        public bool timerOk = false;
 
         /*print() style */
         public GUIStyle style;
+
+        private float fallZone = -50.0f;
 
         // -----------------
         //  Methods
@@ -92,9 +101,7 @@ namespace TAS
             spawnPosition = transform.position;
             spawnRotation = m_camera.transform.rotation;
 
-            // make player alive
-            isDead = false;
-            
+           
         }
 
         private void Update()
@@ -130,11 +137,15 @@ namespace TAS
             // Move the character
             m_controller.Move(playerVelocity * Time.deltaTime);
 
-            if (Input.GetKeyUp("x"))
-                PlayerExplode();
-            if (Input.GetButton("Fire1") && isDead)
-                PlayerSpawn();
+            if(m_controller.transform.position.y < fallZone)
+                PlayerReSpawn();
+            if (Input.GetKeyUp("r"))
+                PlayerReSpawn();
+
+            if (timerOk)
+                timer += Time.deltaTime * 1000;
         }
+
 
 
         // -------------------
@@ -155,7 +166,7 @@ namespace TAS
             transform.rotation = Quaternion.Euler(0, rotY, 0); // Rotates the collider
             m_camera.transform.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
         }
-
+        
         private Vector2 GetInput()
         {
             Vector2 input = new Vector2
@@ -167,7 +178,7 @@ namespace TAS
         }
 
         // Movement methods
-        private void QueueJump()
+        public void QueueJump()
         {
             if (Input.GetButtonDown("Jump"))
                 wishJump = true;
@@ -197,9 +208,9 @@ namespace TAS
             wishSpeed *= movementSettings.moveSpeed;
             
             Accelerate(wishDir, wishSpeed, movementSettings.runAcceleration);
-
-            // caused isGrounded flickering
-            //playerVelocity.y = - m_controller.stepOffset * Time.deltaTime;
+            
+            // reset gravity ( <1 = isGrounded flickering)
+            playerVelocity.y = - 1;
 
             if (wishJump)
             {
@@ -237,19 +248,15 @@ namespace TAS
             else
                 accel = movementSettings.airAcceleration;
 
-            // If the player is ONLY strafing left or right
-            if (input.x == 0 && input.y != 0)
-            {
-                if (wishSpeed > movementSettings.sideStrafeSpeed)
-                    wishSpeed = movementSettings.sideStrafeSpeed;
-                accel = movementSettings.sideStrafeAcceleration;
-            }
-
             Accelerate(wishDir, wishSpeed, accel);
 
-            AirControl(input, wishDir, wishSpeed2);
+            // No air control if angle too big
+            float yVel = playerVelocity.y;
+            playerVelocity.y = 0;
+            if (Vector3.Angle(wishDir, playerVelocity) < 45)
+                AirControl(input, wishDir, wishSpeed2);
 
-            playerVelocity.y -= movementSettings.gravity * Time.deltaTime;
+            playerVelocity.y = yVel - movementSettings.gravity * Time.deltaTime;
         }
 
         private void AirControl(Vector2 input, Vector3 wishDir, float wishSpeed)
@@ -259,34 +266,63 @@ namespace TAS
             float dot;
             float k;
 
-            // Can't control movement if not moving forward or backward
-            if (Mathf.Abs(input.x) < 0.001 || Mathf.Abs(wishSpeed) < 0.001)
-                return;
 
-            zspeed = playerVelocity.y;
-            playerVelocity.y = 0;
-
-            /* Next two lines are equivalent to idTech's VectorNormalize() */
-            speed = playerVelocity.magnitude;
-            playerVelocity.Normalize();
-
-            dot = Vector3.Dot(playerVelocity, wishDir);
-            k = 32;
-            k *= movementSettings.airControl * dot * dot * Time.deltaTime;
-
-            // Change direction while slowing down
-            if (dot > 0)
+            
+            // Good air control if moving only forward or backward
+            if (Mathf.Abs(input.y) > 0 && Mathf.Abs(input.x) < 0.001)
             {
-                playerVelocity.x = playerVelocity.x * speed + wishDir.x * k;
-                playerVelocity.y = playerVelocity.y * speed + wishDir.y * k;
-                playerVelocity.z = playerVelocity.z * speed + wishDir.z * k;
+                zspeed = playerVelocity.y;
+                playerVelocity.y = 0;
+
+                /* Next two lines are equivalent to idTech's VectorNormalize() */
+                speed = playerVelocity.magnitude;
+                playerVelocity.Normalize();
+                
+                playerVelocity.x = playerVelocity.x + wishDir.x * movementSettings.airControl;
+                playerVelocity.y = playerVelocity.y + wishDir.y * movementSettings.airControl;
+                playerVelocity.z = playerVelocity.z + wishDir.z * movementSettings.airControl;
 
                 playerVelocity.Normalize();
+
+                playerVelocity.x *= speed;
+                playerVelocity.y = zspeed; // Note this line
+                playerVelocity.z *= speed;
+
+                return;
+            }
+            // Mediocre if diagonals
+            else if (Mathf.Abs(input.y) > 0 && Mathf.Abs(input.x) > 0)
+            {
+                zspeed = playerVelocity.y;
+                playerVelocity.y = 0;
+
+                /* Next two lines are equivalent to idTech's VectorNormalize() */
+                speed = playerVelocity.magnitude;
+                playerVelocity.Normalize();
+
+                dot = Vector3.Dot(playerVelocity, wishDir);
+                k = 32;
+                k *= movementSettings.airControl * dot * dot * Time.deltaTime;
+
+                // Change direction while slowing down
+                if (dot > 0)
+                {
+                    playerVelocity.x = playerVelocity.x * speed + wishDir.x * k;
+                    playerVelocity.y = playerVelocity.y * speed + wishDir.y * k;
+                    playerVelocity.z = playerVelocity.z * speed + wishDir.z * k;
+
+                    playerVelocity.Normalize();
+                }
+
+                playerVelocity.x *= speed;
+                playerVelocity.y = zspeed; // Note this line
+                playerVelocity.z *= speed;
             }
 
-            playerVelocity.x *= speed;
-            playerVelocity.y = zspeed; // Note this line
-            playerVelocity.z *= speed;
+            else
+            {
+
+            }
         }
 
         private void Accelerate(Vector3 wishDir, float wishSpeed, float accel)
@@ -338,24 +374,54 @@ namespace TAS
             playerVelocity.z *= newspeed;
         }
 
+        private void OnControllerColliderHit(ControllerColliderHit hit)
+        { 
+            // reset y velocity if hit ceiling
+            if((m_controller.collisionFlags & CollisionFlags.Above) != 0 && playerVelocity.y > 0)
+            {
+                playerVelocity.y = -movementSettings.gravity * Time.deltaTime;
+            }
+
+            // walljumps
+            if (!m_controller.isGrounded && hit.normal.y < 0.1f)
+            {
+                if (wishJump)
+                { 
+                    playerVelocity += hit.normal * movementSettings.jumpSpeed;
+                    playerVelocity.y += movementSettings.WallJumpSpeed;
+                }
+            }   
+        }
+
+        public void jumpPad(float jumpForce, Vector3 normal)
+        {
+            playerVelocity = normal * jumpForce;
+        }
+
         // -----------------
         //  SpeedOmeter
         // -----------------
-        private void OnGUI()
+        /*private void OnGUI()
         {
             Vector3 ups = m_controller.velocity;
             ups.y = 0;
-            GUI.Label(new Rect(0, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
-        }
+            GUI.Label(new Rect(15, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
+            GUI.Label(new Rect(15, 30, 400, 100), "Time: " + timer + "ms", style);
+        }*/
        
 
 
         // -----------------
         //  Player actions
         // -----------------
-        private void PlayerExplode()
+
+        private void PlayerReSpawn()
         {
-            isDead = true;
+            transform.position = reSpawnPosition;
+            rotX = 0.0f;
+            rotY = reSpawnRotY;
+            playerVelocity = Vector3.zero;
+            
         }
 
         private void PlayerSpawn()
@@ -364,8 +430,9 @@ namespace TAS
             m_camera.transform.rotation = spawnRotation;
             rotX = 0.0f;
             rotY = 0.0f;
+            timer = 0.0f;
             playerVelocity = Vector3.zero;
-            isDead = false;
+
         }
 
 
@@ -383,6 +450,14 @@ namespace TAS
             
             tossDirection.Normalize();
             playerVelocity += tossDirection * force;
+        }
+
+        public void activeGun()
+        {
+            GetComponent<Shoot>().enabled = true;
+            transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+
+
         }
     }
 }   

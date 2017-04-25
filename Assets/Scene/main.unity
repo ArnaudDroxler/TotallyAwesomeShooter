@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -436,7 +436,7 @@ Transform:
   m_LocalScale: {x: 33.333336, y: 33.333336, z: 33.333336}
   m_Children: []
   m_Father: {fileID: 792083284}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &618703805
 Mesh:
@@ -632,8 +632,8 @@ MonoBehaviour:
     friction: 6
   viewSettings:
     playerViewYOffset: 0.6
-    xMouseSensitivity: 30
-    yMouseSensitivity: 30
+    xMouseSensitivity: 50
+    yMouseSensitivity: 50
   style:
     m_Name: 
     m_Normal:
@@ -754,7 +754,7 @@ Transform:
   m_Children:
   - {fileID: 753509980}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &753509975
 GameObject:
@@ -1073,7 +1073,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh-992
+  m_Name: pb_Mesh-3838
   serializedVersion: 8
   m_SubMeshes:
   - serializedVersion: 2
@@ -1838,7 +1838,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4048396557394428, guid: 6b5e42ccf5a283246bfc84180dd21c27, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 64710970791062824, guid: 6b5e42ccf5a283246bfc84180dd21c27,
         type: 2}
@@ -2031,6 +2031,14 @@ Prefab:
     - target: {fileID: 100004, guid: 1e3539eb2d8892c4683c73017d8dbb94, type: 3}
       propertyPath: m_Layer
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400004, guid: 1e3539eb2d8892c4683c73017d8dbb94, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 1e3539eb2d8892c4683c73017d8dbb94, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1e3539eb2d8892c4683c73017d8dbb94, type: 3}

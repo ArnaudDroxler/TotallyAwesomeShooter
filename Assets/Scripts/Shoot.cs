@@ -54,5 +54,9 @@ namespace TAS
             }
         }
 
+        public float getMagazineState()
+        {
+            return magazineState / magazineSize / 100;
+        }
     }
 }

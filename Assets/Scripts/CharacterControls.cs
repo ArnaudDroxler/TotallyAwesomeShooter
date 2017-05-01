@@ -77,13 +77,13 @@ namespace TAS
         public GUIStyle style;
 
         private float fallZone = -50.0f;
+        
 
         // -----------------
         //  Methods
         // -----------------
         private void Start()
         {
-            
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
@@ -129,11 +129,6 @@ namespace TAS
             else
                 AirMove(input);
 
-            // Ceiling  colision detection (no floating when hitting ceiling)
-            // TODO
-            // TODO
-            // TODO
-
             // Move the character
             m_controller.Move(playerVelocity * Time.deltaTime);
 
@@ -145,12 +140,19 @@ namespace TAS
             if (timerOk)
                 timer += Time.deltaTime * 1000;
         }
-
-
-
+        
         // -------------------
         //   Custom Methods
         // -------------------
+
+        public void SetupPlayer(Transform t)
+        {
+            spawnPosition = t.position;
+            spawnPosition.y += 2;
+            spawnRotation = t.rotation;
+            reSpawnRotY = t.rotation.eulerAngles.y;
+            PlayerSpawn();
+        }
 
         private void RotateView()
         {
@@ -177,7 +179,10 @@ namespace TAS
             return input;
         }
 
+        // -------------------
         // Movement methods
+        // -------------------
+
         public void QueueJump()
         {
             if (Input.GetButtonDown("Jump"))
@@ -374,6 +379,10 @@ namespace TAS
             playerVelocity.z *= newspeed;
         }
 
+        // ------------------
+        // Player interactions
+        // ------------------
+
         private void OnControllerColliderHit(ControllerColliderHit hit)
         { 
             // reset y velocity if hit ceiling
@@ -397,19 +406,7 @@ namespace TAS
         {
             playerVelocity = normal * jumpForce;
         }
-
-        // -----------------
-        //  SpeedOmeter
-        // -----------------
-        /*private void OnGUI()
-        {
-            Vector3 ups = m_controller.velocity;
-            ups.y = 0;
-            GUI.Label(new Rect(15, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
-            GUI.Label(new Rect(15, 30, 400, 100), "Time: " + timer + "ms", style);
-        }*/
-       
-
+        
 
         // -----------------
         //  Player actions
@@ -429,7 +426,7 @@ namespace TAS
             transform.position = spawnPosition;
             m_camera.transform.rotation = spawnRotation;
             rotX = 0.0f;
-            rotY = 0.0f;
+            rotY = spawnRotation.eulerAngles.y;
             timer = 0.0f;
             playerVelocity = Vector3.zero;
 
@@ -452,12 +449,22 @@ namespace TAS
             playerVelocity += tossDirection * force;
         }
 
+        // ----------------
+        // Activate gun
+        // ----------------
         public void activeGun()
         {
             GetComponent<Shoot>().enabled = true;
             transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+        }
 
-
+        // ---------------
+        // End of game
+        // ---------------
+        public void endGame()
+        {
+            timerOk = false;
+            GameObject.Find("GameManager").GetComponent<GameManager>().EndGame();
         }
     }
 }   

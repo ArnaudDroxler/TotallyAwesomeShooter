@@ -23,9 +23,15 @@ public class UI_Manager_Script : MonoBehaviour {
 
 
     //levelchooser
-    public void StartLevel(string NameLevel)
+    public void StartLevelTuto()
     {
-        SceneManager.LoadScene(NameLevel);
+
+        SceneManager.LoadScene("levelTuto");
+    }
+
+    public void StartLevel1()
+    {
+        SceneManager.LoadScene("main");
     }
 
 

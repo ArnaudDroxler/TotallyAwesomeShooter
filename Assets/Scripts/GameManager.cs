@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine.SceneManagement;
 
 namespace TAS
 {
@@ -72,6 +71,7 @@ namespace TAS
         public void menu()
         {
             // TODO Loadscene menu
+            SceneManager.LoadScene("menu");
 
         }
     }

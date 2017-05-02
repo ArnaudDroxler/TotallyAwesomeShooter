@@ -32,19 +32,19 @@ namespace TAS
         // Update is called once per frame
         public void EndGame() {
             float score = player.GetComponent<CharacterControls>().timer;
-            Destroy(player.GetComponent<Shoot>());
-            Destroy(player.GetComponent<CharacterControls>());
+            player.GetComponent<Shoot>().enabled = false;
+            player.GetComponent<CharacterControls>().enabled = false;
             Destroy(ui);
 
             // SHOW END LEVEL UI
             // setup new ui
             ui = (GameObject)Instantiate(Resources.Load("EndOfLevel"));
-            Button btnMenu = GameObject.Find("Menu").GetComponent<Button>(); 
-            btnMenu.onClick.AddListener(() => menu());
+            Button btnMenu = GameObject.Find("Menu").GetComponent<Button>();
+            btnMenu.onClick.AddListener(new UnityEngine.Events.UnityAction(menu));
             Button btnRestart = GameObject.Find("Restart").GetComponent<Button>();
             btnRestart.onClick.AddListener(() => restart());
             Cursor.visible = true;
-
+            Cursor.lockState = CursorLockMode.None;
 
             var ts = TimeSpan.FromMilliseconds(score);
             var parts = string.Format("{0:D2}:{1:D2}:{2:D3}", ts.Minutes, ts.Seconds, ts.Milliseconds).Split(':').SkipWhile(s => Regex.Match(s, @"00\w").Success).ToArray();
@@ -65,14 +65,13 @@ namespace TAS
         public void restart()
         {
             Destroy(player);
-            Debug.Log("aésldfjasdf");
-            // Destroy completely the player object
+            Destroy(ui);
             Awake();
         }
 
         public void menu()
         {
-            Debug.Log("aésldfjasdf");
+            // TODO Loadscene menu
 
         }
     }

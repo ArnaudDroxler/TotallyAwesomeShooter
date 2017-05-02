@@ -367,10 +367,8 @@ MonoBehaviour:
     airAcceleration: 2
     airDecceleration: 2
     airControl: 0.3
-    sideStrafeAcceleration: 50
-    sideStrafeSpeed: 1
     jumpSpeed: 8
-    WallJumpSpeed: 12
+    WallJumpSpeed: 3
     moveScale: 1
     gravity: 20
     friction: 6
@@ -464,7 +462,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ffff46d423ffa418d4eb1eb7dd2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireRate: 1
+  magazineSize: 4
+  reloadRate: 1
+  fireRate: 0.2
   rocket: {fileID: 114103427821195018, guid: 8a43553d2d25a9e4c8af552ca3af384a, type: 2}
   moveSpeed: 20
   m_camera: {fileID: 20065221475987400}

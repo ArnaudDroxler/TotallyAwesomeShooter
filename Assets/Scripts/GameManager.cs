@@ -21,19 +21,19 @@ namespace TAS
 
             // Setup UI
             ui = (GameObject)Instantiate(Resources.Load("GameUI"));
-            ui.GetComponentInChildren<SpeedDisplay>().player = player;
-            ui.GetComponentInChildren<TimerDisplay>().player = player;
             
-
+            // Setup player
             player.GetComponent<CharacterControls>().SetupPlayer(spawn.transform);
-    }
+            player.GetComponent<CharacterControls>().activeGun(spawn.GetComponentInChildren<SpawnCollider>().startWithRocketLauncher);
+        }
 
         // Update is called once per frame
-        public void EndGame() {
+        public void EndGame()
+        {
+            Destroy(ui);
             float score = player.GetComponent<CharacterControls>().timer;
             player.GetComponent<Shoot>().enabled = false;
             player.GetComponent<CharacterControls>().enabled = false;
-            Destroy(ui);
 
             // SHOW END LEVEL UI
             // setup new ui
@@ -63,14 +63,11 @@ namespace TAS
 
         public void restart()
         {
-            Destroy(player);
-            Destroy(ui);
-            Awake();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         public void menu()
         {
-            // TODO Loadscene menu
             SceneManager.LoadScene("menu");
 
         }

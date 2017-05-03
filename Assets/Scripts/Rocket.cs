@@ -50,9 +50,7 @@ namespace TAS
 
                     if (collider.GetComponent<Rigidbody>())
                     {
-                        Debug.Log("coucou");
                         collider.GetComponent<Rigidbody>().AddExplosionForce(power, origin, radius);
-                        //collider.gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(5.0f, 5.0f, 5.0f));
                     }
                 }
 

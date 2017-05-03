@@ -10,11 +10,12 @@ namespace TAS
 
         private Transform gun;
         private float i;
-        public GameObject player;
+        private CharacterControls player;
 
         void Start()
         {
             gun = GetComponent<Transform>();
+            player = (CharacterControls)GameObject.FindObjectOfType(typeof(CharacterControls));
         }
 
         void Update()
@@ -29,8 +30,8 @@ namespace TAS
 
         private void OnTriggerEnter(Collider playerCollider)
         {
-            player.GetComponent<CharacterControls>().activeGun();
-            Destroy(gameObject);
+            player.activeGun(true);
+            //Destroy(gameObject);
         }
     }
 }

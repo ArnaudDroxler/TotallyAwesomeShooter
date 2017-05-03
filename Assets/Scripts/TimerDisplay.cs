@@ -12,16 +12,17 @@ namespace TAS
     {
 
         private Text timerDisplay;
-        public GameObject player;
+        private CharacterControls player;
 
         private void Start()
         {
+            player = (CharacterControls)GameObject.FindObjectOfType(typeof(CharacterControls));
             timerDisplay = GetComponent<Text>();
         }
 
         public void Update()
         {
-            double timer = player.GetComponent<CharacterControls>().timer;
+            double timer = player.timer;
 
             var ts = TimeSpan.FromMilliseconds(timer);
             var parts = string.Format("{0:D2}:{1:D2}:{2:D3}",  ts.Minutes, ts.Seconds, ts.Milliseconds).Split(':').SkipWhile(s => Regex.Match(s, @"00\w").Success).ToArray();

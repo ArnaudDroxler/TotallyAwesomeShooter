@@ -10,16 +10,17 @@ namespace TAS
     {
 
         private Text speedDisplay;
-        public GameObject player;
+        private CharacterControls player;
 
         private void Start()
         {
+            player = (CharacterControls)GameObject.FindObjectOfType(typeof(CharacterControls));
             speedDisplay = GetComponent<Text>();
         }
 
         public void Update()
-        {
-            Vector3 ups = player.GetComponent<CharacterControls>().m_controller.velocity;
+        {   
+            Vector3 ups = player.m_controller.velocity;
             ups.y = 0;
             speedDisplay.text = Mathf.Round(ups.magnitude * 100) / 100 + " ups";
         }

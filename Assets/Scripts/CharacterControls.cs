@@ -34,13 +34,9 @@ namespace TAS
             public float airAcceleration = 2.0f;          // Air accel
             public float airDecceleration = 2.0f;         // Deacceleration experienced when ooposite strafing
             public float airControl = 0.3f;               // How precise air control is
-            //public float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when
-            //public float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
             public float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
-            public float WallJumpSpeed = 10.0f;
-            public float moveScale = 1.0f;
+            public float WallJumpSpeed = 8.0f;
             public float gravity = 20.0f;
-            public float friction = 6.0f;
         }
 
         // ----------------
@@ -116,14 +112,17 @@ namespace TAS
                 }
             }
 
-            RotateView();
-
-            //Jump detection here to not miss it
-            QueueJump();
-
-            // this should be in fixedUpdate but lags
-            Vector2 input = GetInput();
             
+            // Get the inputs
+            RotateView();
+            QueueJump();
+            Vector2 input = GetInput();
+            if (Input.GetButtonDown("suicide"))
+                PlayerReSpawn();
+            if (Input.GetButtonDown("restart"))
+                PlayerSpawn();
+
+            // Calculate player velocity
             if (m_controller.isGrounded)
                 GroundMove(input);
             else
@@ -133,8 +132,6 @@ namespace TAS
             m_controller.Move(playerVelocity * Time.deltaTime);
 
             if(m_controller.transform.position.y < fallZone)
-                PlayerReSpawn();
-            if (Input.GetKeyUp("r"))
                 PlayerReSpawn();
 
             if (timerOk)
@@ -179,10 +176,6 @@ namespace TAS
             return input;
         }
 
-        // -------------------
-        // Movement methods
-        // -------------------
-
         public void QueueJump()
         {
             if (Input.GetButtonDown("Jump"))
@@ -191,6 +184,10 @@ namespace TAS
                 wishJump = false;
         }
 
+        // -------------------
+        // Movement methods
+        // -------------------
+        
         private void GroundMove(Vector2 input)
         {
             // Debug coloring in gray when on the ground
@@ -200,28 +197,23 @@ namespace TAS
             Vector3 wishDir;
             float wishSpeed;
 
-            if (!wishJump)
-                ApplyFriction(1.0f);
-            else
-                ApplyFriction(0);
+            if (wishJump)
+            {
+                playerVelocity.y = movementSettings.jumpSpeed;
+                wishJump = false;
+                return;
+            }
             
             wishDir = new Vector3(input.x, 0, input.y);
             wishDir = transform.TransformDirection(wishDir);
             wishDir.Normalize();
 
-            wishSpeed = wishDir.magnitude;
-            wishSpeed *= movementSettings.moveSpeed;
+            wishSpeed = wishDir.magnitude * movementSettings.moveSpeed;
             
-            Accelerate(wishDir, wishSpeed, movementSettings.runAcceleration);
+            playerVelocity = wishDir * wishSpeed;
+            if (playerVelocity.y < 0)
+                playerVelocity.y = - 1;
             
-            // reset gravity ( <1 = isGrounded flickering)
-            playerVelocity.y = - 1;
-
-            if (wishJump)
-            {
-                playerVelocity.y = movementSettings.jumpSpeed;
-                wishJump = false;
-            }
         }
 
         private void AirMove(Vector2 input)
@@ -278,13 +270,11 @@ namespace TAS
             {
                 zspeed = playerVelocity.y;
                 playerVelocity.y = 0;
-
-                /* Next two lines are equivalent to idTech's VectorNormalize() */
+                
                 speed = playerVelocity.magnitude;
                 playerVelocity.Normalize();
                 
                 playerVelocity.x = playerVelocity.x + wishDir.x * movementSettings.airControl;
-                playerVelocity.y = playerVelocity.y + wishDir.y * movementSettings.airControl;
                 playerVelocity.z = playerVelocity.z + wishDir.z * movementSettings.airControl;
 
                 playerVelocity.Normalize();
@@ -300,10 +290,11 @@ namespace TAS
             {
                 zspeed = playerVelocity.y;
                 playerVelocity.y = 0;
-
-                /* Next two lines are equivalent to idTech's VectorNormalize() */
+                
                 speed = playerVelocity.magnitude;
                 playerVelocity.Normalize();
+
+                wishDir.Normalize();
 
                 dot = Vector3.Dot(playerVelocity, wishDir);
                 k = 32;
@@ -313,7 +304,6 @@ namespace TAS
                 if (dot > 0)
                 {
                     playerVelocity.x = playerVelocity.x * speed + wishDir.x * k;
-                    playerVelocity.y = playerVelocity.y * speed + wishDir.y * k;
                     playerVelocity.z = playerVelocity.z * speed + wishDir.z * k;
 
                     playerVelocity.Normalize();
@@ -323,11 +313,7 @@ namespace TAS
                 playerVelocity.y = zspeed; // Note this line
                 playerVelocity.z *= speed;
             }
-
-            else
-            {
-
-            }
+            
         }
 
         private void Accelerate(Vector3 wishDir, float wishSpeed, float accel)
@@ -349,36 +335,6 @@ namespace TAS
             playerVelocity.z += accelSpeed * wishDir.z;
         }
 
-        private void ApplyFriction(float t)
-        {
-            Vector3 vec = playerVelocity; // Equivalent to: VectorCopy();
-            float speed;
-            float newspeed;
-            float control;
-            float drop;
-
-            vec.y = 0.0f;
-            speed = vec.magnitude;
-            drop = 0.0f;
-
-            /* Only if the player is on the ground then apply friction */
-            if (m_controller.isGrounded)
-            {
-                control = speed < movementSettings.runDeacceleration ? movementSettings.runDeacceleration : speed;
-                drop = control * movementSettings.friction * Time.deltaTime * t;
-            }
-
-            newspeed = speed - drop;
-            if (newspeed < 0)
-                newspeed = 0;
-            if (speed > 0)
-                newspeed /= speed;
-
-            playerVelocity.x *= newspeed;
-            // playerVelocity.y *= newspeed;
-            playerVelocity.z *= newspeed;
-        }
-
         // ------------------
         // Player interactions
         // ------------------
@@ -395,9 +351,11 @@ namespace TAS
             if (!m_controller.isGrounded && hit.normal.y < 0.1f)
             {
                 if (wishJump)
-                { 
-                    playerVelocity += hit.normal * movementSettings.jumpSpeed;
-                    playerVelocity.y += movementSettings.WallJumpSpeed;
+                {
+                    float verticalVelocity = playerVelocity.y;
+                    playerVelocity.y = 0;
+                    playerVelocity += hit.normal * 10;
+                    playerVelocity.y = movementSettings.WallJumpSpeed;
                 }
             }   
         }
@@ -409,7 +367,7 @@ namespace TAS
         
 
         // -----------------
-        //  Player actions
+        //  Spawning Methods
         // -----------------
 
         private void PlayerReSpawn()
@@ -429,6 +387,7 @@ namespace TAS
             rotY = spawnRotation.eulerAngles.y;
             timer = 0.0f;
             playerVelocity = Vector3.zero;
+            timerOk = false;
 
         }
 
@@ -452,10 +411,10 @@ namespace TAS
         // ----------------
         // Activate gun
         // ----------------
-        public void activeGun()
+        public void activeGun(bool enable)
         {
-            GetComponent<Shoot>().enabled = true;
-            transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+            GetComponent<Shoot>().enabled = enable;
+            transform.GetChild(0).GetChild(0).gameObject.SetActive(enable);
         }
 
         // ---------------

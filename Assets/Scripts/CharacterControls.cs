@@ -37,6 +37,7 @@ namespace TAS
             public float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
             public float WallJumpSpeed = 8.0f;
             public float gravity = 20.0f;
+            public float friction = 6.0f;
         }
 
         // ----------------
@@ -209,6 +210,9 @@ namespace TAS
             wishDir.Normalize();
 
             wishSpeed = wishDir.magnitude * movementSettings.moveSpeed;
+
+
+            Accelerate(wishDir, wishSpeed, movementSettings.runAcceleration);
             
             playerVelocity = wishDir * wishSpeed;
             if (playerVelocity.y < 0)
@@ -335,11 +339,41 @@ namespace TAS
             playerVelocity.z += accelSpeed * wishDir.z;
         }
 
-        // ------------------
-        // Player interactions
-        // ------------------
+          private void ApplyFriction(float t)
+         {
+             Vector3 vec = playerVelocity; // Equivalent to: VectorCopy();
+             float speed;
+             float newspeed;
+             float control;
+             float drop;
+ 
+             vec.y = 0.0f;
+             speed = vec.magnitude;
+             drop = 0.0f;
+ 
+             /* Only if the player is on the ground then apply friction */
+             if (m_controller.isGrounded)
+             {
+                 control = speed<movementSettings.runDeacceleration? movementSettings.runDeacceleration : speed;
+                 drop = control* movementSettings.friction * Time.deltaTime* t;
+             }
+ 
+             newspeed = speed - drop;
+             if (newspeed< 0)
+                 newspeed = 0;
+             if (speed > 0)
+                 newspeed /= speed;
+ 
+             playerVelocity.x *= newspeed;
+             // playerVelocity.y *= newspeed;
+             playerVelocity.z *= newspeed;
+         }
 
-        private void OnControllerColliderHit(ControllerColliderHit hit)
+// ------------------
+// Player interactions
+// ------------------
+
+private void OnControllerColliderHit(ControllerColliderHit hit)
         { 
             // reset y velocity if hit ceiling
             if((m_controller.collisionFlags & CollisionFlags.Above) != 0 && playerVelocity.y > 0)

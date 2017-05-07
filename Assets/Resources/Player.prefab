@@ -362,14 +362,13 @@ MonoBehaviour:
   m_camera: {fileID: 20065221475987400}
   movementSettings:
     moveSpeed: 7
-    runAcceleration: 14
-    runDeacceleration: 10
+    runAcceleration: 20
+    runDeacceleration: 20
     airAcceleration: 2
     airDecceleration: 2
     airControl: 0.3
     jumpSpeed: 8
     WallJumpSpeed: 8
-    moveScale: 1
     gravity: 20
     friction: 6
   viewSettings:
